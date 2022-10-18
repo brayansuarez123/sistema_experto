@@ -1,0 +1,1 @@
+Juego que se basa en una historia mas halla de las estrellas.

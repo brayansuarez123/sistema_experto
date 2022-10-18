@@ -1,0 +1,2 @@
+aventura, gestion, pixel art y mundo abierto 
+duracion: indefinido

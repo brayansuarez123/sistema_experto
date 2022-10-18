@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sistema experto de videojuegos: sugerencias gamers!</title>
+    <style>
+      fieldset {
+        border: none;
+      }
+      fieldset > section {
+        border-bottom: solid 2px #eeeeee;
+        padding-bottom: 1.5rem;
+      }
+      form button[type="submit"] {
+        padding: 0.5rem;
+        font-weight: 600;
+        border: none;
+        border-radius: 10px;
+        background: #546e7a;
+        color: #fafafa;
+      }
+    </style>
+  </head>
+  <body>
+    <form action="{{ url_for('devolver') }}" method="post">
+      <fieldset>
+        <section>
+          <h4>Accion</h4>
+          <label>
+            Si
+            <input type="radio" name="accion" value="si" />
+          </label>
+          <label>
+            No
+            <input type="radio" name="accion" value="no" />
+          </label>
+        </section>
+
+        <section>
+          <h4>Aventura</h4>
+          <label>
+            Si
+            <input type="radio" name="aventura" value="si" />
+          </label>
+          <label>
+            No
+            <input type="radio" name="aventura" value="no" />
+          </label>
+        </section>
+
+        <section>
+          <h4>Mundo abierto</h4>
+          <label>
+            Si
+            <input type="radio" name="mundo_abierto" value="si" />
+          </label>
+          <label>
+            No
+            <input type="radio" name="mundo_abierto" value="no" />
+          </label>
+        </section>
+
+        <section>
+          <h4>Infantil</h4>
+          <label>
+            Si
+            <input type="radio" name="infantil" value="si" />
+          </label>
+          <label>
+            No
+            <input type="radio" name="infantil" value="no" />
+          </label>
+        </section>
+
+        <section>
+          <h4>Disparos</h4>
+          <label>
+            Si
+            <input type="radio" name="disparos" value="si" />
+          </label>
+          <label>
+            No
+            <input type="radio" name="disparos" value="no" />
+          </label>
+        </section>
+
+        <section>
+          <h4>Mitologia</h4>
+          <label>
+            Si
+            <input type="radio" name="mitologia" value="si" />
+          </label>
+          <label>
+            No
+            <input type="radio" name="mitologia" value="no" />
+          </label>
+        </section>
+
+        <section>
+          <h4>Prota femenina</h4>
+          <label>
+            Si
+            <input type="radio" name="prota_femenina" value="si" />
+          </label>
+          <label>
+            No
+            <input type="radio" name="prota_femenina" value="no" />
+          </label>
+        </section>
+
+        <section>
+          <h4>Historia</h4>
+          <label>
+            Si
+            <input type="radio" name="historia" value="si" />
+          </label>
+          <label>
+            No
+            <input type="radio" name="historia" value="no" />
+          </label>
+        </section>
+
+        <section>
+          <h4>Medievales</h4>
+          <label>
+            Si
+            <input type="radio" name="medievales" value="si" />
+          </label>
+          <label>
+            No
+            <input type="radio" name="medievales" value="no" />
+          </label>
+        </section>
+
+        <section>
+          <h4>Vista panoramica</h4>
+          <label>
+            Si
+            <input type="radio" name="vista_panoramica" value="si" />
+          </label>
+          <label>
+            No
+            <input type="radio" name="vista_panoramica" value="no" />
+          </label>
+        </section>
+
+        <section>
+          <h4>Militares</h4>
+          <label>
+            Si
+            <input type="radio" name="militares" value="si" />
+          </label>
+          <label>
+            No
+            <input type="radio" name="militares" value="no" />
+          </label>
+        </section>
+
+        <section>
+          <h4>Construccion</h4>
+          <label>
+            Si
+            <input type="radio" name="construccion" value="si" />
+          </label>
+          <label>
+            No
+            <input type="radio" name="construccion" value="no" />
+          </label>
+        </section>
+
+        <section>
+          <h4>Pixel art</h4>
+          <label>
+            Si
+            <input type="radio" name="pixel_art" value="si" />
+          </label>
+          <label>
+            No
+            <input type="radio" name="pixel_art" value="no" />
+          </label>
+        </section>
+
+        <section>
+          <h4>Comedia</h4>
+          <label>
+            Si
+            <input type="radio" name="comedia" value="si" />
+          </label>
+          <label>
+            No
+            <input type="radio" name="comedia" value="no" />
+          </label>
+        </section>
+
+        <section>
+          <h4>Lucha</h4>
+          <label>
+            Si
+            <input type="radio" name="lucha" value="si" />
+          </label>
+          <label>
+            No
+            <input type="radio" name="lucha" value="no" />
+          </label>
+        </section>
+
+        <section>
+          <h4>Primera persona</h4>
+          <label>
+            Si
+            <input type="radio" name="primera_persona" value="si" />
+          </label>
+          <label>
+            No
+            <input type="radio" name="primera_persona" value="no" />
+          </label>
+        </section>
+
+        <section>
+          <h4>Mundo post apocaliptico</h4>
+          <label>
+            Si
+            <input type="radio" name="mundo_post_apocaliptico" value="si" />
+          </label>
+          <label>
+            No
+            <input type="radio" name="mundo_post_apocaliptico" value="no" />
+          </label>
+        </section>
+
+        <section>
+          <h4>Frenetico</h4>
+          <label>
+            Si
+            <input type="radio" name="frenetico" value="si" />
+          </label>
+          <label>
+            No
+            <input type="radio" name="frenetico" value="no" />
+          </label>
+        </section>
+
+        <section>
+          <h4>Gestion</h4>
+          <label>
+            Si
+            <input type="radio" name="gestion" value="si" />
+          </label>
+          <label>
+            No
+            <input type="radio" name="gestion" value="no" />
+          </label>
+        </section>
+
+        <section>
+          <h4>Sangrientos</h4>
+          <label>
+            Si
+            <input type="radio" name="sangrientos" value="si" />
+          </label>
+          <label>
+            No
+            <input type="radio" name="sangrientos" value="no" />
+          </label>
+        </section>
+
+        <section>
+          <h4>Interestelar</h4>
+          <label>
+            Si
+            <input type="radio" name="interestelar" value="si" />
+          </label>
+          <label>
+            No
+            <input type="radio" name="interestelar" value="no" />
+          </label>
+        </section>
+
+        <section>
+          <h4>Plataformas</h4>
+          <label>
+            Si
+            <input type="radio" name="plataformas" value="si" />
+          </label>
+          <label>
+            No
+            <input type="radio" name="plataformas" value="no" />
+          </label>
+        </section>
+
+        <section>
+          <h4>Asaltos</h4>
+          <label>
+            Si
+            <input type="radio" name="asaltos" value="si" />
+          </label>
+          <label>
+            No
+            <input type="radio" name="asaltos" value="no" />
+          </label>
+        </section>
+
+        <section>
+          <h4>Lineales</h4>
+          <label>
+            Si
+            <input type="radio" name="lineales" value="si" />
+          </label>
+          <label>
+            No
+            <input type="radio" name="lineales" value="no" />
+          </label>
+        </section>
+
+        <section>
+          <h4>Mazmorras</h4>
+          <label>
+            Si
+            <input type="radio" name="mazmorras" value="si" />
+          </label>
+          <label>
+            No
+            <input type="radio" name="mazmorras" value="no" />
+          </label>
+        </section>
+
+      </fieldset>
+      <button name="submit" type="submit">Predecir videojuego</button>
+    </form>
+  </body>
+</html>
