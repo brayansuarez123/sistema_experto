@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Resultados</title>
+    <style>
+      h1 {
+        font-weight: 700;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>{{ juego_recomendado.name }}</h1>
+    <br />
+    <section>
+      <h4>Acerca de este juego:</h4>
+      <p>{{ juego_recomendado.detalle }}</p>
+    </section>
+    <section>
+      <h4>Generos que contiene el juego:</h4>
+      <p>{{ juego_recomendado.generos }}</p>
+    </section>
+  </body>
+</html>
