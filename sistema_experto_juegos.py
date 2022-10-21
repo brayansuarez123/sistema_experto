@@ -1,11 +1,18 @@
-from re import S
-from experta import *
+from typing import Dict, Tuple
+from experta import Fact, DefFacts, KnowledgeEngine, Rule, MATCH, NOT, AND, W, OR
 
 lista_juegos = []
 decisiones = []
 mapa_juegos = {}
 mapeo_descripciones = {}
 mapeo_definiciones = {}
+
+generos = "accion, aventura, mundo_abierto, infantil, disparos, mitologia, prota_femenina, historia, medievales, vista_panoramica, militares, construccion,pixel_art, comedia, lucha, primera_persona, mundo_post_apocaliptico, frenetico, gestion, sangrientos, interestelar, plataformas, asaltos, lineales, mazmorras"
+generos = generos.split(", ")
+
+generos_iniciales = ["accion", "aventura", "mundo_abierto", "lucha"]
+
+pregunta_base = "¿ Te gusta el genero: {} ?"
 
 
 def preprocess():
@@ -19,7 +26,8 @@ def preprocess():
         datos_juegos = archivo_juegos.read()
         lista_decisiones = datos_juegos.split("\n")
         decisiones.append(lista_decisiones)
-        mapa_juegos[str(lista_decisiones)] = juego
+        dict_decisiones = {k: v for (k, v) in zip(generos, lista_decisiones)}
+        mapa_juegos[juego] = dict_decisiones
         archivo_juegos.close()
         archivo_juegos = open("descripciones de juegos/" +
                               juego + ".txt", "r", encoding='UTF-8')
@@ -65,6 +73,11 @@ def if_not_matched(juego):
     print("Los generos que contiene y su duracion aproximada es: \n")
     print(decisiones+"\n")
 
+
+def obtener_juegos_por_generos(**generos):
+    return {key: values for (key,
+                             values) in mapa_juegos.items() if generos.items() <= values.items()}
+
 # @my_decorator is just a way of saying just_some_function = my_decorator(just_some_function)
 # def identify_juego(accion, aventura, mundo_abierto, infantil, disparos, mitologia, prota_femenina, historia,medievales ,vista_panoramica,militares):
 
@@ -75,113 +88,40 @@ class Greetings(KnowledgeEngine):
         print("")
         print("Hola bienvenido a sugerencias gamers!.")
         self.__juego_recomendado = None
+        self.__generos = {}
+        self.__pregunta = None
         yield Fact(action="encontrar_juego")
 
-    """ @Rule(Fact(action='encontrar_juego'), NOT(Fact(accion=W())),salience = 1)
-	def categoria_0(self):
-		self.declare(Fact(accion=input("accion: ")))
+    def get_pregunta(self):
+        return self.__pregunta
 
-	@Rule(Fact(action='encontrar_juego'), NOT(Fact(aventura=W())),salience = 1)
-	def categoria_1(self):
-		self.declare(Fact(aventura=input("aventura: ")))
+    def get_generos(self):
+        return self.__generos
 
-	@Rule(Fact(action='encontrar_juego'), NOT(Fact(mundo_abierto=W())),salience = 1)
-	def categoria_2(self):
-		self.declare(Fact(mundo_abierto=input("mundo abierto: ")))
+    def siguiente_pregunta(self) -> Tuple[str, bool]:
+        if not ha_tomado_alguna_rama(self):
+            return tomar_genero_raiz(self)
+        self.facts
 
-	@Rule(Fact(action='encontrar_juego'), NOT(Fact(infantil=W())),salience = 1)
-	def categoria_3(self):
-		self.declare(Fact(infantil=input("infantil: ")))
+    @Rule(AND(Fact(action='encontrar_juego'), NOT(Fact(juego=W()))), salience=10)
+    def preguntar_root(self):
+        if not ha_tomado_alguna_rama(self):
+            genero, err = tomar_genero_raiz(self)
+            self.__pregunta = {"pregunta": pregunta_base.format(
+                genero), "genero": genero}
+            if err:
+                self.__pregunta = {
+                    "pregunta": "No se ha encontrado un juego que se ajuste a sus criterios", "genero": "NOT_FOUND"}
+            return
 
-	@Rule(Fact(action='encontrar_juego'), NOT(Fact(disparos=W())),salience = 1)
-	def categoria_4(self):
-		self.declare(Fact(disparos=input("disparos: ")))
+    def preguntar(self):
+        if not (self.__juego_recomendado == None):
+            return
+        return obtener_juegos_por_generos(**self.__generos)
 
-	@Rule(Fact(action='encontrar_juego'), NOT(Fact(prota_femenina=W())),salience = 1)
-	def categoria_5(self):
-		self.declare(Fact(prota_femenina=input("prota femenina: ")))
-	 
-	@Rule(Fact(action='encontrar_juego'), NOT(Fact(militares=W())),salience = 1)
-	def categoria_6(self):
-		self.declare(Fact(militares=input("militares: ")))
-	
-	@Rule(Fact(action='encontrar_juego'), NOT(Fact(medievales=W())),salience = 1)
-	def categoria_7(self):
-		self.declare(Fact(medievales=input("medievales: ")))
-	
-	@Rule(Fact(action='encontrar_juego'), NOT(Fact(historia=W())),salience = 1)
-	def categoria_8(self):
-		self.declare(Fact(historia=input("historia: ")))
-	
-	@Rule(Fact(action='encontrar_juego'), NOT(Fact(mitologia=W())),salience = 1)
-	def categoria_9(self):
-		self.declare(Fact(mitologia=input("mitologia: ")))
-	
-	@Rule(Fact(action='encontrar_juego'), NOT(Fact(vista_panoramica=W())),salience = 1)
-	def categoria_10(self):
-		self.declare(Fact(vista_panoramica=input("vista panoramica: ")))
-
-	@Rule(Fact(action='encontrar_juego'), NOT(Fact(construccion=W())),salience = 1)
-	def categoria_11(self):
-		self.declare(Fact(construccion=input("construccion: ")))
-
-	@Rule(Fact(action='encontrar_juego'), NOT(Fact(pixel_art=W())),salience = 1)
-	def categoria_12(self):
-		self.declare(Fact(pixel_art=input("pixel art: ")))
-
-	@Rule(Fact(action='encontrar_juego'), NOT(Fact(comedia=W())),salience = 1)
-	def categoria_13(self):
-		self.declare(Fact(comedia=input("comedia: ")))
-
-	@Rule(Fact(action='encontrar_juego'), NOT(Fact(lucha=W())),salience = 1)
-	def categoria_14(self):
-		self.declare(Fact(lucha=input("lucha: ")))
-
-	@Rule(Fact(action='encontrar_juego'), NOT(Fact(primera_persona=W())),salience = 1)
-	def categoria_15(self):
-		self.declare(Fact(primera_persona=input("primera persona: ")))
-
-	@Rule(Fact(action='encontrar_juego'), NOT(Fact(mundo_post_apocaliptico=W())),salience = 1)
-	def categoria_16(self):
-		self.declare(Fact(mundo_post_apocaliptico=input("mundo post apocaliptico: ")))
-
-	@Rule(Fact(action='encontrar_juego'), NOT(Fact(frenetico=W())),salience = 1)
-	def categoria_17(self):
-		self.declare(Fact(frenetico=input("frenetico: ")))
-
-	@Rule(Fact(action='encontrar_juego'), NOT(Fact(gestion=W())),salience = 1)
-	def categoria_18(self):
-		self.declare(Fact(gestion=input("gestion: ")))
-
-	@Rule(Fact(action='encontrar_juego'), NOT(Fact(sangrientos=W())),salience = 1)
-	def categoria_19(self):
-		self.declare(Fact(sangrientos=input("sangrientos: ")))
-
-	@Rule(Fact(action='encontrar_juego'), NOT(Fact(interestelar=W())),salience = 1)
-	def categoria_20(self):
-		self.declare(Fact(interestelar=input("interestelar: ")))
-
-	@Rule(Fact(action='encontrar_juego'), NOT(Fact(plataformas=W())),salience = 1)
-	def categoria_21(self):
-		self.declare(Fact(plataformas=input("plataformas: ")))
-
-	@Rule(Fact(action='encontrar_juego'), NOT(Fact(asaltos=W())),salience = 1)
-	def categoria_22(self):
-		self.declare(Fact(asaltos=input("asaltos: ")))
-
-	@Rule(Fact(action='encontrar_juego'), NOT(Fact(lineales=W())),salience = 1)
-	def categoria_23(self):
-		self.declare(Fact(lineales=input("lineales: ")))
-
-	@Rule(Fact(action='encontrar_juego'), NOT(Fact(mazmorras=W())),salience = 1)
-	def categoria_24(self):
-		self.declare(Fact(mazmorras=input("mazmorras: ")))	 """
-
-    def colocar_categorias(self, formDict):
-        print("datos obtenidos ", formDict)
-        f = Fact(**formDict)
-        self.declare(f)
-        return f
+    def colocar_categorias(self, **formDict):
+        self.__generos = {**self.__generos, **formDict}
+        self.declare(Fact(**formDict))
 
     @Rule(Fact(action='encontrar_juego'), Fact(accion="si"), Fact(aventura="si"), Fact(mundo_abierto="no"), Fact(infantil="no"), Fact(disparos="si"), Fact(mitologia="no"), Fact(prota_femenina="si"), Fact(historia="no"), Fact(medievales="no"), Fact(vista_panoramica="no"), Fact(militares="no"), Fact(construccion="no"), Fact(pixel_art="no"), Fact(comedia="no"), Fact(lucha="no"), Fact(primera_persona="no"), Fact(mundo_post_apocaliptico="no"), Fact(frenetico="no"), Fact(gestion="no"), Fact(sangrientos="no"), Fact(interestelar="no"), Fact(plataformas="no"), Fact(asaltos="no"), Fact(lineales="no"), Fact(mazmorras="no"))
     def juego_0(self):
@@ -295,7 +235,8 @@ class Greetings(KnowledgeEngine):
         print(juego_details+"\n")
         print("su duracion aproximada y los generos a los que pertenece: \n")
         print(treatments+"\n")
-        self.__juego_recomendado = { "name": juego, "detalle": juego_details, "generos": treatments }
+        self.__juego_recomendado = {
+            "name": juego, "detalle": juego_details, "generos": treatments}
 
     @Rule(Fact(action='encontrar_juego'),
           Fact(accion=MATCH.accion),
@@ -340,22 +281,46 @@ class Greetings(KnowledgeEngine):
                 max_count = count
                 max_juego = val
 
-        self.__juego_recomendado = { "name": max_juego, "detalle": get_detalles(max_juego), "generos": get_decisiones(max_juego) }
+        self.__juego_recomendado = {"name": max_juego, "detalle": get_detalles(
+            max_juego), "generos": get_decisiones(max_juego)}
         if_not_matched(max_juego)
+
     def get_juego_recomendado(self):
         return self.__juego_recomendado
+
+
+def ha_tomado_alguna_rama(obj: Greetings):
+    generos_actuales = obj.get_generos()
+    # Generos temporales para investigar si algun genero incial tiene el valor de "si"
+    generos_temp: Dict = {}
+    for genero in generos_iniciales:
+        generos_temp[genero] = generos_actuales.get(genero, "no")
+    for value in generos_temp.values():
+        if value == "si":
+            return True
+    return False
+
+
+def tomar_genero_raiz(obj: Greetings) -> Tuple[str, bool]:
+    """
+        retorna la pregunta raiz y si hubo algun error (si hubo un error el segundo valor sera True)
+    """
+    generos_temp = obj.get_generos()
+    for genero in generos_iniciales:
+        if generos_temp.get(genero, False) == False:
+            return (genero, False)
+    return ("", True)
 
 
 __all__ = ['Greetings']
 
 
 if __name__ == "__main__":
-    preprocess()
     engine = Greetings()
-    while (1):
-        engine.reset()  # Prepare the engine for the execution.
-        engine.run()  # Run it!
-        print("le gustaria volver a probar el sistema experto?")
-        if input() == "no":
-            exit()
-        # print(engine.facts)
+    engine.reset()  # Prepare the engine for the execution.
+    engine.colocar_categorias(
+        accion="si", aventura="si", mundo_abierto="si", infantil="no")
+    print(engine.preguntar())
+    # engine.run()  # Run it!
+    if engine.get_pregunta():
+        print(engine.get_pregunta())
