@@ -1,3 +1,4 @@
 aventura=si
 mitologia=no
 gestion=si
+accion=no

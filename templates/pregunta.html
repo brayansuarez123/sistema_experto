@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pregunta</title>
+    <style>
+      fieldset {
+        border: none;
+      }
+      fieldset > section {
+        border-bottom: solid 2px #eeeeee;
+        padding-bottom: 1.5rem;
+      }
+      form button[type="submit"] {
+        padding: 0.5rem;
+        font-weight: 600;
+        border: none;
+        border-radius: 10px;
+        background: #546e7a;
+        color: #fafafa;
+      }
+    </style>
+  </head>
+  <body>
+    <form action="{{ url_for('preguntas') }}" method="post">
+      <fieldset>
+        <section>
+          <h4>{{ pregunta }}</h4>
+          <label>
+            Si
+            <input type="radio" name="{{genero}}" value="si" required />
+          </label>
+          <label>
+            No
+            <input type="radio" name="{{genero}}" value="no" required />
+          </label>
+        </section>
+      </fieldset>
+      <button name="submit" type="submit">Subir Respuesta</button>
+    </form>
+  </body>
+</html>

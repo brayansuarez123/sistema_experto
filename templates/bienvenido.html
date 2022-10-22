@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bienvenido</title>
+    <style>
+      form {
+        margin-top: 2rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        max-width: 20rem;
+      }
+
+      label[for="username"] {
+        font-weight: 700;
+      }
+
+      input {
+        border-radius: 20px;
+        padding: 0.2rem 0rem;
+        padding-left: 1rem;
+      }
+
+      h1 {
+        text-align: center;
+      }
+      main {
+        display: grid;
+        place-content: center;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Bienvenido al sistema experto de videojuegos</h1>
+
+    <main>
+      <form action="{{ url_for('redirectToExpert') }}" method="post">
+        <label for="username">Escribe tu nombre para empezar</label>
+        <input id="username" name="username" required />
+        <button type="submit">Continuar</button>
+      </form>
+    </main>
+  </body>
+</html>

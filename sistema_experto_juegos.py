@@ -7,12 +7,14 @@ mapa_juegos = {}
 mapeo_descripciones = {}
 mapeo_definiciones = {}
 
-generos = "accion, aventura, mundo_abierto, infantil, disparos, mitologia, prota_femenina, historia, medievales, vista_panoramica, militares, construccion,pixel_art, comedia, lucha, primera_persona, mundo_post_apocaliptico, frenetico, gestion, sangrientos, interestelar, plataformas, asaltos, lineales, mazmorras"
-generos = generos.split(", ")
-
-generos_iniciales = ["accion", "aventura", "mundo_abierto", "lucha"]
+generos_iniciales = ["accion", "aventura", "lucha", "mundo_abierto"]
 
 pregunta_base = "¿ Te gusta el genero: {} ?"
+
+
+def listToDict(lista: list[str]):
+    result = [v.split("=") for v in lista]
+    return {v[0]: v[1] for v in result}
 
 
 def preprocess():
@@ -26,7 +28,7 @@ def preprocess():
         datos_juegos = archivo_juegos.read()
         lista_decisiones = datos_juegos.split("\n")
         decisiones.append(lista_decisiones)
-        dict_decisiones = {k: v for (k, v) in zip(generos, lista_decisiones)}
+        dict_decisiones = listToDict(lista_decisiones)
         mapa_juegos[juego] = dict_decisiones
         archivo_juegos.close()
         archivo_juegos = open("descripciones de juegos/" +
@@ -79,10 +81,10 @@ def get_datos_del_juego(juego: str) -> Juego:
 
 
 class SistemaExperto():
-    def __init__(self) -> None:
+    def __init__(self, **kwargs) -> None:
         print("INICIANDO SISTEMA EXPERTO")
         self.__juego_recomendado = None
-        self.__generos = {}
+        self.__generos = kwargs
         self.__pregunta = None
 
     def get_pregunta(self):
@@ -91,7 +93,7 @@ class SistemaExperto():
     def get_generos(self):
         return self.__generos
 
-    def siguiente_pregunta(self) -> Dict:
+    def siguiente_pregunta(self) -> Response:
         if not (self.__juego_recomendado == None):
             return get_respuesta(juego=self.__juego_recomendado)
         resp = self.__preguntar_root()
@@ -113,10 +115,15 @@ class SistemaExperto():
     def __preguntar(self):
         games = self.__obtener_juegos_por_generos(**self.get_generos())
         if len(games.keys()) > 1:
-            firstK = next(iter(games))
-            nuevo_genero = next(iter((games[firstK].keys() -
-                                      self.get_generos().keys())))
+            histogram = {}
+            for game in games.values():
+                for gener in game.keys():
+                    histogram[gener] = histogram.get(gener, 0) + 1
+            histogram = {k: v for k,
+                         v in histogram.items() if not (k in self.get_generos())}
+            nuevo_genero = max(histogram, key=histogram.get)
             return get_respuesta(genero=nuevo_genero)
+        print(games)
         juego_recomendado = list(games.keys())[0]
         self.__juego_recomendado = get_datos_del_juego(juego_recomendado)
         return get_respuesta(juego=self.__juego_recomendado)
@@ -128,6 +135,7 @@ class SistemaExperto():
         return self.__juego_recomendado
 
     def __obtener_juegos_por_generos(self, **generos):
+        print(generos)
         return {key: values for (key, values) in mapa_juegos.items() if generos.items() <= values.items()}
 
 
@@ -157,9 +165,9 @@ def tomar_genero_raiz(obj: SistemaExperto) -> Tuple[str, bool]:
 __all__ = ['SistemaExperto']
 
 
+# SOLO PARA HACER PRUEBAS DEL SISTEMA EXPERTO
 if __name__ == "__main__":
-    engine = SistemaExperto()
-    engine.set_generos(
-        accion="si", aventura="si", mundo_abierto="si", infantil="no")
+    engine = SistemaExperto(accion="no", aventura="si")
+    engine.set_generos()
     print(engine.siguiente_pregunta())
     # engine.run()  # Run it!

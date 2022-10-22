@@ -1,2 +1,3 @@
 aventura=si
 mitologia=si
+accion=no

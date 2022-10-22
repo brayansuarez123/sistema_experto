@@ -1,2 +1,5 @@
 mundo_abierto=si
-vista_panoramica=no
+vista_panoramica=si
+accion=no
+aventura=no
+lucha=no

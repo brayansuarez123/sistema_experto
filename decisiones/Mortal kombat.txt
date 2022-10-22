@@ -1,3 +1,5 @@
 lucha=si
 aventura=no
-accion=si
+sangriento=si
+accion=no
+infantil=no

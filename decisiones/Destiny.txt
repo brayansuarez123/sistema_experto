@@ -1,3 +1,6 @@
 mundo_abierto=si
 vista_panoramica=no
 pixel_art=no
+accion=no
+lucha=no
+aventura=no
