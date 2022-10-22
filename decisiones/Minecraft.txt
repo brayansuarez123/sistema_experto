@@ -3,4 +3,3 @@ aventura=no
 disparos=si
 militar=no
 medievales=no
-construccion=si
