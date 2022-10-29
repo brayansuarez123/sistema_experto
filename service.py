@@ -33,10 +33,10 @@ class Service:
     def consultar_juego_por_nombre(self, name: str):
         cursor = self.db.cursor(dictionary=True)
         sql = """
-        SELECT g.id as id, g.title as titulo, g.description as descripcion, g.image_url, genre.name as genero, gg.value
+        SELECT g.id as id, g.title as titulo, g.description as descripcion, g.image_url, genre.name as genero
         from game as g JOIN game_genre as gg ON gg.id_game = g.id
         JOIN genre ON gg.id_genre = genre.id
-        WHERE g.title = %s
+        WHERE g.title = %s AND gg.value = 'si'
         """
         cursor.execute(sql, (name,))
         result_raw = cursor.fetchall()
@@ -46,8 +46,7 @@ class Service:
             result["descripcion"] = row["descripcion"]
             result["id"] = row["id"]
             result["image_url"] = row["image_url"]
-            result["genero"] = {
-                **result.get("genero", {}), row["genero"]: row["value"]}
+            result["generos"] = (*result.get("generos", ()), row["genero"])
         cursor.close()
         return result
 

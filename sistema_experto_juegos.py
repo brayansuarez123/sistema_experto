@@ -2,74 +2,16 @@ from typing import Dict, Tuple
 from utils import get_respuesta, Response, Juego
 from service import Service
 from database import db
-lista_juegos = []
-decisiones = []
-mapeo_descripciones = {}
-mapeo_definiciones = {}
 
 generos_iniciales = ["accion", "aventura", "lucha", "mundo_abierto"]
 
 pregunta_base = "¿ Te gusta el genero: {} ?"
 
-
-def listToDict(lista: list[str]):
-    result = [v.split("=") for v in lista]
-    return {v[0]: v[1] for v in result}
-
-
-def preprocess():
-    global lista_juegos, decisiones, mapeo_descripciones, mapeo_definiciones
-    juegos = open("juegos.txt")
-    juegos_genero = juegos.read()
-    lista_juegos = juegos_genero.split("\n")
-    juegos.close()
-    for juego in lista_juegos:
-        archivo_juegos = open("decisiones/" + juego + ".txt")
-        datos_juegos = archivo_juegos.read()
-        lista_decisiones = datos_juegos.split("\n")
-        decisiones.append(lista_decisiones)
-        archivo_juegos.close()
-        archivo_juegos = open("descripciones de juegos/" +
-                              juego + ".txt", "r", encoding='UTF-8')
-        datos_juegos = archivo_juegos.read()
-        mapeo_descripciones[juego] = datos_juegos
-        archivo_juegos.close()
-        archivo_juegos = open("generos/" + juego +
-                              ".txt", "r", encoding='UTF-8')
-        datos_juegos = archivo_juegos.read()
-        mapeo_definiciones[juego] = datos_juegos
-        archivo_juegos.close()
-
-
-preprocess()
-
 service = Service(db)
 
 
-def get_detalles(juego):
-    print('JUEGO GANADOR', juego)
-    return mapeo_descripciones[juego]
-
-
-def get_decisiones(juego):
-    return mapeo_definiciones[juego]
-
-
-def if_not_matched(juego):
-    print("")
-    id_juego = juego
-    detalles_juego = get_detalles(id_juego)
-    decisiones = get_decisiones(id_juego)
-    print("")
-    print("El titulo que mas se acomoda a tus gustos es: %s\n" % id_juego)
-    print("una breve descripcion del mismo es :\n")
-    print(detalles_juego + "\n")
-    print("Los generos que contiene y su duracion aproximada es: \n")
-    print(decisiones + "\n")
-
-
 def get_datos_del_juego(juego: str) -> Juego:
-    return {"titulo": juego, "descripcion": "Descipcion del juego", "generos": "lista de generos"}
+    return service.consultar_juego_por_nombre(juego)
 
 
 class SistemaExperto():
