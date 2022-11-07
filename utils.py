@@ -4,7 +4,12 @@ from typing import TypedDict
 class Juego(TypedDict):
     titulo: str
     descripcion: str
-    generos: str
+    generos: list[str]
+
+
+class JuegoRecomendado(TypedDict):
+    titulo: str
+    porcentaje: float
 
 
 class Response(TypedDict):
@@ -32,6 +37,9 @@ class InputsToResponse(TypedDict):
 
     # Contenido del Juego
     juego: Juego
+
+    # Juegos Recomendados
+    juegos_r: list[Juego]
 
 
 pregunta_base = "¿ Te gusta el genero: {} ?"

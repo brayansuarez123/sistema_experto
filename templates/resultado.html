@@ -26,7 +26,26 @@
     </section>
     <section>
       <h4>Generos que contiene el juego:</h4>
-      <p>{{ juego_recomendado.generos }}</p>
+      <ul>
+        {% for gen in juego_recomendado.generos %}
+        <li>{{ gen }}</li>
+        {% endfor %}
+      </ul>
+    </section>
+    <section>
+      {% if sugerencias|length <= 0 %}
+        <span class="error"><h5> no se encontro sugerencias </h5><span>
+      {% else %}
+          <h5>Juegos que te podrian gustar</h5>
+          <ul>
+            {% for sug in sugerencias %}
+            <li>titulo del juego: {{ sug.titulo }}, porcentaje de ajuste: {{ sug.porcentaje }}</li>
+            {% endfor %}
+            {% if sugerencias|length < 3 %}
+              <li>No se encontraron mas sugerencias</li>
+            {% endif %}
+          </ul>
+      {% endif %}
     </section>
     <form action="{{ url_for('hello_world') }}" action="GET">
       <button type="submit">Volver a intentar</button>
