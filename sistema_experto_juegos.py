@@ -1,7 +1,8 @@
-from typing import Dict, Tuple
+from typing import Tuple
 from utils import get_respuesta, Response, Juego
 from service import Service
 from database import db
+import itertools
 
 generos_iniciales = ["accion", "aventura", "lucha", "mundo_abierto"]
 
@@ -14,12 +15,20 @@ def get_datos_del_juego(juego: str) -> Juego:
     return service.consultar_juego_por_nombre(juego)
 
 
+def cambiar_valor_de_desicion(desicion: str):
+    if desicion == "si":
+        return "no"
+    return "si"
+
+
 class SistemaExperto():
     # inicializar clase
-    def __init__(self, **kwargs) -> None:
+    def __init__(self, *generos_list, **kwargs) -> None:
         print("INICIANDO SISTEMA EXPERTO")
         self.juegos_por_genero = service.consultar_generos_por_juego()
+        self.juegos = service.consultar_juegos()
         self.__juego_recomendado = None
+        self.__generos_ordenados = generos_list
         self.__generos = kwargs
         self.__pregunta = None
 
@@ -28,6 +37,38 @@ class SistemaExperto():
 
     def get_generos(self):
         return self.__generos
+
+    def recomendar_juegos(self, juego: Juego) -> Tuple[str]:
+        return self.__recomendar_recursivo(*self.__generos_ordenados, maxR=3)
+
+    def __recomendar_recursivo(self, *generos, **kwargs):
+        lista_r = kwargs.get("lista_r", tuple())
+        if len(generos) <= 1:
+            lista_r = self.eliminar_juego_de_tuple(
+                lista_r, self.get_juego_recomendado()["titulo"])
+            return lista_r
+        maxR = kwargs.get("maxR", 3)
+        gen_ordered = list(generos)
+        gen_dict = {}
+        gen_ordered.pop()
+        for gen in gen_ordered:
+            print(self.get_generos())
+            gen_dict[gen] = self.get_generos()[gen]
+        lista_r = lista_r + self.crear_dict_juegos_recomendados(
+            len(gen_ordered), *self.__obtener_juegos_por_generos(**gen_dict).keys())
+        if len(lista_r) > maxR:
+            lista_r = self.eliminar_juego_de_tuple(
+                lista_r, self.get_juego_recomendado()["titulo"])
+            return lista_r[:maxR]
+        return self.__recomendar_recursivo(*gen_ordered, lista_r=lista_r, maxR=maxR)
+
+    def eliminar_juego_de_tuple(self, tu: tuple, juego: str):
+        return tuple(filter(lambda x: x["titulo"] != juego, tu))
+
+    def crear_dict_juegos_recomendados(self, generos_restantes: int, *juegos: list[str]):
+        porcentaje_de_ajuste = generos_restantes / len(self.get_generos())
+        porcentaje_de_ajuste = f"{int(porcentaje_de_ajuste * 100)} %"
+        return tuple(map(lambda x: {"titulo": x, "porcentaje": porcentaje_de_ajuste}, juegos))
 
     def siguiente_pregunta(self) -> Response:
         """
@@ -79,6 +120,7 @@ class SistemaExperto():
                          v in histogram.items() if not (k in self.get_generos())}
             # Revisa la pregunta con mas puntuacion como candidata a ser preguntada
             nuevo_genero = max(histogram, key=histogram.get)
+
             return get_respuesta(genero=nuevo_genero)
         # No se encontro ningun juego
         if len(games.keys()) == 0:
@@ -126,8 +168,10 @@ __all__ = ['SistemaExperto']
 
 # SOLO PARA HACER PRUEBAS DEL SISTEMA EXPERTO
 if __name__ == "__main__":
-    engine = SistemaExperto(accion="no", aventura="si",
+    engine = SistemaExperto(*["accion", "aventura", "mitologia", "gestion"], accion="no", aventura="si",
                             mitologia="no", gestion="si")
     engine.set_generos()
-    print(engine.siguiente_pregunta())
+    result = engine.siguiente_pregunta()
+    print(engine.recomendar_juegos(result["juego"]))
+
     # engine.run()  # Run it!

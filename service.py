@@ -50,9 +50,24 @@ class Service:
         cursor.close()
         return result
 
+    def consultar_generos_por_un_juego(self, title):
+        cursor = self.db.cursor(dictionary=True)
+        sql = """
+        SELECT genre.name, gg.value from game
+        JOIN game_genre as gg ON gg.id_game = game.id
+        JOIN genre ON gg.id_genre = genre.id
+        WHERE game.title = %s
+        """
+        cursor.execute(sql, (title,))
+        result_raw = cursor.fetchall()
+        result = {}
+        for row in result_raw:
+            result[row["name"]] = row["value"]
+        cursor.close()
+        return result
+
 
 if __name__ == "__main__":
     from database import db
     s = Service(db)
-    s.consultar_juegos()
-    print(s.consultar_juego_por_nombre("Animal crossing"))
+    print(s.consultar_generos_por_un_juego("Animal crossing")["aventura"])

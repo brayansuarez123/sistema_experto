@@ -6,6 +6,24 @@ users_history = {}
 
 current_user = None
 
+answers = {}
+
+
+def saveAnswers(**resp_data):
+    resp_data.pop("submit")
+    answers[current_user] = answers.get(current_user, list())
+    answers[current_user].extend(resp_data.keys())
+
+
+def obtener_generos_ordenados():
+    return answers[current_user]
+
+
+def clean_answers():
+    if current_user == None:
+        return
+    answers[current_user] = []
+
 
 def auth_middle():
     if current_user == None:
@@ -16,6 +34,7 @@ def auth_middle():
 def hello_world():
     global current_user
     current_user = None
+    clean_answers()
     return render_template("bienvenido.html")
 
 
@@ -44,19 +63,23 @@ def preguntas():
     global users_history, current_user
     if auth_middle():
         return auth_middle()
-    nuevos_generos = {k: v for k, v in request.form.to_dict(
-        flat=True).items() if k != "submit"}
+    nuevos_generos = request.form.to_dict(flat=True)
+    nuevos_generos.pop("submit")
+    saveAnswers(**request.form.to_dict(flat=True))
     users_history[current_user] = {
         **users_history.get(current_user, {}), **nuevos_generos}
-    print(users_history[current_user])
-    experto = SistemaExperto(**users_history[current_user])
+    experto = SistemaExperto(*obtener_generos_ordenados(),
+                             **users_history[current_user])
     respExp = experto.siguiente_pregunta()
     if respExp.get("err"):
+        clean_answers()
         users_history[current_user] = {}
         return render_template("juego_no_encontrado.html")
     if "juego" in respExp:
+        clean_answers()
         users_history[current_user] = {}
-        return render_template("resultado.html", juego_recomendado=respExp.get("juego"))
+        sugerencias = experto.recomendar_juegos(respExp["juego"])
+        return render_template("resultado.html", juego_recomendado=respExp["juego"], sugerencias=sugerencias)
     return render_template("pregunta.html", **respExp)
 
 
