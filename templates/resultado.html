@@ -6,14 +6,63 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Resultados</title>
     <style>
-      h1 {
-        font-weight: 700;
-        text-align: center;
-      }
-      form {
-        padding-top: 2rem;
+      body {
         display: grid;
         place-content: center;
+      }
+
+      h5 {
+        margin: 0;
+      }
+
+      h1 {
+        text-align: center;
+        font-weight: 700;
+        font-size: 2rem;
+        word-spacing: 2px;
+        text-decoration: underline;
+      }
+
+      .game-gen ul {
+        list-style: none;
+        padding: 0;
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+
+      .tag {
+        color: white;
+        background: #607d8b;
+        display: inline;
+        padding: 0.2rem 0.5rem;
+        border-radius: 10px;
+      }
+
+      .error {
+        background: #ef5350;
+        display: block;
+        text-align: center;
+        padding: 1rem;
+        font-size: 1.3rem;
+        color: white;
+      }
+
+      form {
+        display: grid;
+        margin-top: 1rem;
+      }
+
+      form button[type="submit"] {
+        padding: 0.5rem;
+        font-weight: 600;
+        border: none;
+        border-radius: 10px;
+        background: #546e7a;
+        color: #fafafa;
+      }
+      .not-enought {
+        color: #e57373;
       }
     </style>
   </head>
@@ -24,27 +73,31 @@
       <h4>Acerca de este juego:</h4>
       <p>{{ juego_recomendado.descripcion }}</p>
     </section>
-    <section>
+    <section class="game-gen">
       <h4>Generos que contiene el juego:</h4>
       <ul>
         {% for gen in juego_recomendado.generos %}
-        <li>{{ gen }}</li>
+        <li class="tag">{{ gen }}</li>
         {% endfor %}
       </ul>
     </section>
     <section>
       {% if sugerencias|length <= 0 %}
-        <span class="error"><h5> no se encontro sugerencias </h5><span>
+      <span class="error" class="error"
+        ><h5>no se encontro sugerencias</h5></span
+      >
       {% else %}
-          <h5>Juegos que te podrian gustar</h5>
-          <ul>
-            {% for sug in sugerencias %}
-            <li>titulo del juego: {{ sug.titulo }}, porcentaje de ajuste: {{ sug.porcentaje }}</li>
-            {% endfor %}
-            {% if sugerencias|length < 3 %}
-              <li>No se encontraron mas sugerencias</li>
-            {% endif %}
-          </ul>
+      <h5>Juegos que te podrian gustar</h5>
+      <ul>
+        {% for sug in sugerencias %}
+        <li>
+          titulo del juego: {{ sug.titulo }}, porcentaje de ajuste: {{
+          sug.porcentaje }}
+        </li>
+        {% endfor %} {% if sugerencias|length < 3 %}
+        <li class="not-enought">No se encontraron mas sugerencias</li>
+        {% endif %}
+      </ul>
       {% endif %}
     </section>
     <form action="{{ url_for('hello_world') }}" action="GET">
