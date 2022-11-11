@@ -54,8 +54,12 @@ class SistemaExperto():
         for gen in gen_ordered:
             print(self.get_generos())
             gen_dict[gen] = self.get_generos()[gen]
-        lista_r = lista_r + self.crear_dict_juegos_recomendados(
+        titulos_juegos = tuple(map(lambda x: x["titulo"], lista_r))
+        lista_nueva = self.crear_dict_juegos_recomendados(
             len(gen_ordered), *self.__obtener_juegos_por_generos(**gen_dict).keys())
+        lista_nueva = tuple(
+            filter(lambda x: x["titulo"] not in titulos_juegos, lista_nueva))
+        lista_r = lista_r + lista_nueva
         if len(lista_r) > maxR:
             lista_r = self.eliminar_juego_de_tuple(
                 lista_r, self.get_juego_recomendado()["titulo"])
